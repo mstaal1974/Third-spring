@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Third Spring - Strategic Plan Dashboard</title>
+    <!-- Chosen Palette: Calm Harmony (Light Slate, Deep Teal, Muted Grays) -->
+    <!-- Application Structure Plan: A multi-section dashboard SPA. The structure flows logically from high-level summary (Dashboard) to external analysis (Market, Personas, Competitors), then to internal strategy (Dual-Brand Model, Offerings, Funnel), and finally to execution (Financials, Roadmap, Risks). This narrative arc provides a comprehensive strategic overview. The key interaction remains the financial scenario toggle, supported by clear, static visualizations for qualitative information. -->
+    <!-- Visualization & Content Choices: Market Size -> Inform -> Key Metric Cards -> N/A. Target Personas -> Organize -> HTML Cards -> N/A -> Humanizes the target audience. Competitive Landscape -> Organize -> HTML Table -> N/A. Dual-Brand Model -> Organize -> Table/Diagram -> N/A. Core Offerings -> Inform -> Icon-based cards -> N/A. Financial Projections -> Compare/Change -> Interactive Line/Bar Charts (Chart.js) -> Toggle Switch -> Allows scenario comparison. Roadmap -> Organize -> Timeline view (HTML/CSS) -> N/A -> Clarifies execution steps. CONFIRMING NO SVG/Mermaid. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+        }
+        .nav-link.active {
+            color: #0d9488; /* teal-600 */
+            border-bottom-color: #0d9488;
+        }
+        .kpi-card, .persona-card, .offering-card, .roadmap-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .kpi-card:hover, .persona-card:hover, .offering-card:hover, .roadmap-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .scenario-toggle {
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .scenario-toggle.active {
+            background-color: #0d9488; /* teal-600 */
+            color: white;
+        }
+         .scenario-toggle:not(.active) {
+            background-color: #e2e8f0; /* slate-200 */
+            color: #475569; /* slate-600 */
+        }
+    </style>
+</head>
+<body class="text-slate-700">
+
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-4">
+                    <span class="text-xl font-bold text-slate-800">Third Spring |</span><span class="text-xl font-semibold text-teal-600">Strategic Dashboard</span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-2 text-xs xl:space-x-4 xl:text-sm">
+                        <a href="#dashboard" class="nav-link px-2 py-2 font-medium text-slate-500 hover:text-teal-600 border-b-2 border-transparent">Dashboard</a>
+                        <a href="#market" class="nav-link px-2 py-2 font-medium text-slate-500 hover:text-teal-600 border-b-2 border-transparent">Market</a>
+                        <a href="#personas" class="nav-link px-2 py-2 font-medium text-slate-500 hover:text-teal-600 border-b-2 border-transparent">Personas</a>
+                        <a href="#competitors" class="nav-link px-2 py-2 font-medium text-slate-500 hover:text-teal-600 border-b-2 border-transparent">Competitors</a>
+                        <a href="#dual-brand" class="nav-link px-2 py-2 font-medium text-slate-500 hover:text-teal-600 border-b-2 border-transparent">Our Model</a>
+                        <a href="#offerings" class="nav-link px-2 py-2 font-medium text-slate-500 hover:text-teal-600 border-b-2 border-transparent">Offerings</a>
+                        <a href="#strategy" class="nav-link px-2 py-2 font-medium text-slate-500 hover:text-teal-600 border-b-2 border-transparent">Funnel</a>
+                        <a href="#financials" class="nav-link px-2 py-2 font-medium text-slate-500 hover:text-teal-600 border-b-2 border-transparent">Financials</a>
+                        <a href="#roadmap" class="nav-link px-2 py-2 font-medium text-slate-500 hover:text-teal-600 border-b-2 border-transparent">Roadmap</a>
+                        <a href="#risks" class="nav-link px-2 py-2 font-medium text-slate-500 hover:text-teal-600 border-b-2 border-transparent">Risks</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+
+        <section id="dashboard" class="scroll-mt-20">
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-800 mb-2">Executive Dashboard</h1>
+            <p class="text-lg text-slate-500 mb-8">A high-level overview of the strategic plan for Testosterone Replacement Therapy (TRT) in the Australian market.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="kpi-card bg-white p-6 rounded-xl shadow-md border border-slate-200">
+                    <h3 class="text-md font-semibold text-slate-500">Potential Market (Symptomatic Men 40+)</h3>
+                    <p class="text-4xl font-bold text-teal-600 mt-2">250,000+</p>
+                    <p class="text-sm text-slate-400 mt-2">Estimated undertreated population in Australia, representing a significant growth opportunity.</p>
+                </div>
+                <div class="kpi-card bg-white p-6 rounded-xl shadow-md border border-slate-200">
+                    <h3 class="text-md font-semibold text-slate-500">Target Audience Size</h3>
+                    <p class="text-4xl font-bold text-teal-600 mt-2">1-2 Million</p>
+                    <p class="text-sm text-slate-400 mt-2">Australian men over 40 who may qualify for TRT based on general prevalence rates.</p>
+                </div>
+                <div class="kpi-card bg-white p-6 rounded-xl shadow-md border border-slate-200">
+                    <h3 class="text-md font-semibold text-slate-500">5-Year Revenue Goal (Ambitious)</h3>
+                    <p class="text-4xl font-bold text-teal-600 mt-2">$38.9M</p>
+                    <p class="text-sm text-slate-400 mt-2">Cumulative revenue projection based on acquiring 100 new customers per month.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="market" class="mt-16 scroll-mt-20">
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-2">Market Opportunity</h2>
+            <p class="text-lg text-slate-500 mb-8 max-w-4xl">Australia's TRT market is expanding due to demographic shifts and increased health awareness, despite significant regulatory hurdles. Understanding this landscape is key to strategic success.</p>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-xl shadow-md border border-slate-200">
+                    <h3 class="text-xl font-semibold text-slate-700 mb-4">Market Drivers</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="font-medium">📈 Key Health Trends</p>
+                            <p class="text-sm text-slate-500 ml-5">Rising rates of obesity and diabetes are correlated with lower testosterone. 66% of Australian men are overweight or obese, increasing the addressable market.</p>
+                        </div>
+                        <div>
+                            <p class="font-medium">💻 Digital Health Adoption</p>
+                            <p class="text-sm text-slate-500 ml-5">The post-COVID embrace of telehealth creates a major opportunity for accessible, discreet consultations, overcoming geographical barriers for urban and rural patients.</p>
+                        </div>
+                         <div>
+                            <p class="font-medium">👨‍🦳 Aging Population</p>
+                            <p class="text-sm text-slate-500 ml-5">Australia's male population aged 45+ is growing, with a natural increase in age-related testosterone decline and associated symptoms.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md border border-slate-200">
+                    <h3 class="text-xl font-semibold text-slate-700 mb-4">TRT Prescription Landscape</h3>
+                    <div class="chart-container h-80 max-h-[320px]">
+                        <canvas id="prescriptionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="personas" class="mt-16 scroll-mt-20">
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-2">Primary Target Personas</h2>
+            <p class="text-lg text-slate-500 mb-8 max-w-4xl">Our strategy focuses on two core customer segments whose needs and motivations directly align with our service offerings.</p>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="persona-card bg-white p-6 rounded-xl shadow-md border border-slate-200">
+                    <h3 class="text-2xl font-semibold text-slate-800">The "Aging Professional"</h3>
+                    <p class="text-sm font-medium text-slate-500 mb-4">Age 40-65 | Urban | $80k+ Income</p>
+                    <div class="space-y-3 text-sm">
+                        <p><strong class="text-slate-600">Pain Points:</strong> Experiences fatigue, brain fog, and low libido that impact his career and family life.</p>
+                        <p><strong class="text-slate-600">Motivations:</strong> Seeks to regain vitality, mental sharpness, and confidence. Values efficiency, discretion, and evidence-based solutions.</p>
+                        <p><strong class="text-slate-600">Marketing Angle:</strong> Message around performance, productivity, and reclaiming his prime through a professional, convenient telehealth service.</p>
+                    </div>
+                </div>
+                <div class="persona-card bg-white p-6 rounded-xl shadow-md border border-slate-200">
+                    <h3 class="text-2xl font-semibold text-slate-800">The "Health-Conscious Athlete"</h3>
+                    <p class="text-sm font-medium text-slate-500 mb-4">Age 35-50 | Fitness-Oriented</p>
+                     <div class="space-y-3 text-sm">
+                        <p><strong class="text-slate-600">Pain Points:</strong> Slower recovery times, hitting performance plateaus, losing muscle mass despite consistent training.</p>
+                        <p><strong class="text-slate-600">Motivations:</strong> Driven by performance optimization and longevity. Already uses supplements and tracks biometrics.</p>
+                        <p><strong class="text-slate-600">Marketing Angle:</strong> Message around data-driven optimization, enhanced recovery, and achieving peak physical potential safely and under medical supervision.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="competitors" class="mt-16 scroll-mt-20">
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-2">Competitive Landscape</h2>
+            <p class="text-lg text-slate-500 mb-8 max-w-4xl">The market consists of specialized telehealth clinics and traditional GPs. Our differentiation lies in our compliant marketing model, innovative products, and holistic, specialist-led approach.</p>
+            <div class="bg-white p-4 rounded-xl shadow-md border border-slate-200 overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead class="bg-slate-50">
+                        <tr>
+                            <th class="p-3 font-semibold text-slate-600">Competitor Type</th>
+                            <th class="p-3 font-semibold text-slate-600">Examples</th>
+                            <th class="p-3 font-semibold text-slate-600">Primary Model</th>
+                            <th class="p-3 font-semibold text-slate-600">Our Strategic Advantage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b">
+                            <td class="p-3 font-medium">Specialized Telehealth Clinics</td>
+                            <td class="p-3 text-slate-600">Enhanced Men's Clinic, Low T Clinic</td>
+                            <td class="p-3 text-slate-600">Direct-to-consumer telehealth with a focus on convenience.</td>
+                            <td class="p-3 text-slate-600 font-medium">Our compliant dual-brand model provides a sustainable, long-term marketing advantage.</td>
+                        </tr>
+                        <tr>
+                            <td class="p-3 font-medium">General Practitioners (GPs)</td>
+                            <td class="p-3 text-slate-600">Local family doctors</td>
+                            <td class="p-3 text-slate-600">Prescribe TRT (often injectables) after in-person consults.</td>
+                            <td class="p-3 text-slate-600 font-medium">We offer deeper specialist expertise, greater accessibility via telehealth, and a more holistic, data-driven approach.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="dual-brand" class="mt-16 scroll-mt-20">
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-2">Our Model: The Dual-Brand Architecture</h2>
+            <p class="text-lg text-slate-500 mb-8 max-w-4xl">Our core strategy for compliant growth is the separation of marketing (**Momentum Health**) from clinical services (**Third Spring**). This model allows us to educate the market broadly while providing medical care ethically.</p>
+        
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-slate-200">
+                <div class="flex flex-col md:flex-row items-center justify-around mb-8 p-4 bg-slate-50 rounded-lg">
+                     <div class="text-center mb-6 md:mb-0">
+                        <h3 class="text-2xl font-bold text-slate-800">Momentum Health</h3>
+                        <p class="text-slate-500 font-medium">The Marketing & Education Engine</p>
+                    </div>
+                    <div class="text-5xl font-thin text-teal-500 transform md:-rotate-0 rotate-90">&rarr;</div>
+                     <div class="text-center mt-6 md:mt-0">
+                         <h3 class="text-2xl font-bold text-teal-700">Third Spring Clinic</h3>
+                         <p class="text-slate-500 font-medium">The Clinical Provider</p>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left text-slate-600">
+                        <thead class="text-xs text-slate-700 uppercase bg-slate-100">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 rounded-l-lg">Attribute</th>
+                                <th scope="col" class="px-6 py-3">Momentum Health (The Marketer)</th>
+                                <th scope="col" class="px-6 py-3 rounded-r-lg">Third Spring (The Clinic)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="bg-white border-b border-slate-200">
+                                <th scope="row" class="px-6 py-4 font-medium text-slate-900 whitespace-nowrap">Role</th>
+                                <td class="px-6 py-4">Education & Awareness Engine</td>
+                                <td class="px-6 py-4">Medical Service Provider</td>
+                            </tr>
+                             <tr class="bg-slate-50/70 border-b border-slate-200">
+                                <th scope="row" class="px-6 py-4 font-medium text-slate-900 whitespace-nowrap">Focus</th>
+                                <td class="px-6 py-4">The **Problem**: Educating on symptoms of low energy, decreased vitality, and aging.</td>
+                                <td class="px-6 py-4">The **Solution**: Clinical assessment, blood analysis, and prescription of regulated therapies.</td>
+                            </tr>
+                            <tr class="bg-white">
+                                <th scope="row" class="px-6 py-4 font-medium text-slate-900 whitespace-nowrap rounded-bl-lg">Audience</th>
+                                <td class="px-6 py-4">General public: high-achieving men (35-65) interested in health and performance.</td>
+                                <td class="px-6 py-4 rounded-br-lg">Qualified patients who have actively sought a medical consultation.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+        
+        <section id="offerings" class="mt-16 scroll-mt-20">
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-2">Core Service Offerings</h2>
+            <p class="text-lg text-slate-500 mb-8 max-w-4xl">Our "one-stop shop" model provides a comprehensive suite of services, differentiating us from single-solution providers and positioning us as a holistic men's health hub.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="offering-card bg-white p-6 rounded-xl shadow-md border border-slate-200">
+                    <div class="text-3xl mb-3">💧</div>
+                    <h4 class="font-semibold text-lg text-slate-800">Advanced Hormone Therapies</h4>
+                    <p class="text-sm text-slate-500 mt-2">Medically supervised TRT using innovative, high-concentration topical creams for patient comfort and convenience, moving beyond traditional injectables.</p>
+                </div>
+                <div class="offering-card bg-white p-6 rounded-xl shadow-md border border-slate-200">
+                     <div class="text-3xl mb-3">🧬</div>
+                    <h4 class="font-semibold text-lg text-slate-800">Adjunctive Peptide Therapies</h4>
+                    <p class="text-sm text-slate-500 mt-2">Offering prescribed, regulated peptides (e.g., for recovery and vitality) as part of an integrated treatment plan under strict medical guidance.</p>
+                </div>
+                <div class="offering-card bg-white p-6 rounded-xl shadow-md border border-slate-200">
+                     <div class="text-3xl mb-3">🔬</div>
+                    <h4 class="font-semibold text-lg text-slate-800">Precision Diagnostics</h4>
+                    <p class="text-sm text-slate-500 mt-2">Utilizing tools like Optimal DX for functional blood chemistry analysis to create truly personalized and data-driven treatment protocols.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="strategy" class="mt-16 scroll-mt-20">
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-2">The Go-to-Market Funnel</h2>
+            <p class="text-lg text-slate-500 mb-8 max-w-4xl">This funnel visualizes the journey from initial contact via Momentum Health to becoming a patient at Third Spring Clinic.</p>
+            
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-slate-200">
+                <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0 md:space-x-4">
+                    <div class="text-center w-full md:w-1/5">
+                        <div class="mx-auto bg-teal-100 text-teal-700 w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold">1</div>
+                        <h4 class="font-semibold mt-3">Awareness</h4>
+                        <p class="text-sm text-slate-500">Educational content on aging & men's health (blogs, videos) via SEO and targeted ads.</p>
+                    </div>
+                    <div class="text-2xl text-slate-300 hidden md:block">&rarr;</div>
+                    <div class="text-center w-full md:w-1/5">
+                        <div class="mx-auto bg-teal-100 text-teal-700 w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold">2</div>
+                        <h4 class="font-semibold mt-3">Engagement</h4>
+                        <p class="text-sm text-slate-500">Offer value via lead magnets like symptom checklists and wellness guides to capture interest.</p>
+                    </div>
+                    <div class="text-2xl text-slate-300 hidden md:block">&rarr;</div>
+                    <div class="text-center w-full md:w-1/5">
+                         <div class="mx-auto bg-teal-100 text-teal-700 w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold">3</div>
+                        <h4 class="font-semibold mt-3">Consultation</h4>
+                        <p class="text-sm text-slate-500">Funnel qualified leads to a telehealth platform for discreet, professional medical assessment.</p>
+                    </div>
+                     <div class="text-2xl text-slate-300 hidden md:block">&rarr;</div>
+                    <div class="text-center w-full md:w-1/5">
+                         <div class="mx-auto bg-teal-100 text-teal-700 w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold">4</div>
+                        <h4 class="font-semibold mt-3">Treatment</h4>
+                        <p class="text-sm text-slate-500">Provide personalized plans using innovative products and ongoing clinical support.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="financials" class="mt-16 scroll-mt-20">
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-2">Interactive Financial Projections</h2>
+            <p class="text-lg text-slate-500 mb-6 max-w-4xl">Explore the 5-year financial outlook. Select a scenario to dynamically update the charts and see the potential impact on revenue, costs, and customer growth. Projections assume an 80% annual customer retention rate.</p>
+
+            <div class="flex justify-center mb-8">
+                <div class="flex rounded-lg p-1 bg-slate-200">
+                    <button id="ambitiousBtn" class="scenario-toggle active py-2 px-6 rounded-md text-sm font-semibold">Ambitious (100/mo)</button>
+                    <button id="conservativeBtn" class="scenario-toggle py-2 px-6 rounded-md text-sm font-semibold">Conservative (50/mo)</button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-xl shadow-md border border-slate-200">
+                    <h3 class="text-xl font-semibold text-slate-700 mb-4">5-Year Margin Projection</h3>
+                    <div class="chart-container">
+                        <canvas id="marginChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md border border-slate-200">
+                    <h3 class="text-xl font-semibold text-slate-700 mb-4">5-Year Customer Growth</h3>
+                     <div class="chart-container">
+                        <canvas id="customerChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="roadmap" class="mt-16 scroll-mt-20">
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-2">Implementation Roadmap: First 90 Days</h2>
+            <p class="text-lg text-slate-500 mb-8 max-w-4xl">A phased launch plan to build momentum, establish authority, and begin generating a consistent flow of qualified leads.</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="roadmap-card bg-white p-6 rounded-xl shadow-md border border-slate-200">
+                    <h3 class="font-bold text-lg text-teal-700 mb-3">Month 1: Foundation & Launch</h3>
+                    <ul class="space-y-2 text-sm list-disc list-inside text-slate-600">
+                        <li>Launch brand story videos.</li>
+                        <li>Activate paid ad campaigns for top segments.</li>
+                        <li>Release "Hormone Health Quiz" lead magnet.</li>
+                        <li>Begin organic content posting.</li>
+                    </ul>
+                </div>
+                <div class="roadmap-card bg-white p-6 rounded-xl shadow-md border border-slate-200">
+                    <h3 class="font-bold text-lg text-teal-700 mb-3">Month 2: Engagement & Authority</h3>
+                     <ul class="space-y-2 text-sm list-disc list-inside text-slate-600">
+                        <li>Host first live Q&A with clinicians.</li>
+                        <li>Publish first set of patient success stories (anonymized).</li>
+                        <li>Launch YouTube educational series.</li>
+                        <li>Deploy email nurture sequence.</li>
+                    </ul>
+                </div>
+                <div class="roadmap-card bg-white p-6 rounded-xl shadow-md border border-slate-200">
+                    <h3 class="font-bold text-lg text-teal-700 mb-3">Month 3: Scale & Convert</h3>
+                     <ul class="space-y-2 text-sm list-disc list-inside text-slate-600">
+                        <li>Collaborate with first wellness/fitness influencer.</li>
+                        <li>Release "Executive Energy Blueprint" PDF guide.</li>
+                        <li>Launch retargeting ads to warm leads.</li>
+                        <li>Introduce booking incentive/offer.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="risks" class="mt-16 scroll-mt-20">
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-2">Risks & Mitigation</h2>
+            <p class="text-lg text-slate-500 mb-8 max-w-4xl">A proactive approach to managing regulatory and market risks is essential for sustainable growth.</p>
+            
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-slate-200">
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
+                    <div>
+                        <h4 class="text-lg font-semibold text-red-600 flex items-center">
+                            <span class="mr-2">⚠️</span> Regulatory Scrutiny
+                        </h4>
+                        <p class="text-slate-600 mt-1">Strict TGA/AHPRA rules against advertising prescription medicines. High risk of fines for non-compliance.</p>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-semibold text-green-700 flex items-center">
+                           <span class="mr-2">🛡️</span> Mitigation Strategy
+                        </h4>
+                        <p class="text-slate-600 mt-1">Implement the dual-brand model to create a "firewall". Focus marketing on education and symptoms, not treatments.</p>
+                    </div>
+                     <div>
+                        <h4 class="text-lg font-semibold text-red-600 flex items-center">
+                            <span class="mr-2">⚠️</span> Competitive Pressure
+                        </h4>
+                        <p class="text-slate-600 mt-1">Market includes established telehealth clinics and pharmaceutical companies supplying GPs.</p>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-semibold text-green-700 flex items-center">
+                           <span class="mr-2">🛡️</span> Mitigation Strategy
+                        </h4>
+                        <p class="text-slate-600 mt-1">Differentiate through the "one-stop-shop" model, product innovation, and superior, data-driven personalized care.</p>
+                    </div>
+                     <div>
+                        <h4 class="text-lg font-semibold text-red-600 flex items-center">
+                            <span class="mr-2">⚠️</span> Customer Acquisition Cost (CAC)
+                        </h4>
+                        <p class="text-slate-600 mt-1">Unmodeled CAC ($500-$1000 per customer) could initially reduce margins by 20-40%.</p>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-semibold text-green-700 flex items-center">
+                           <span class="mr-2">🛡️</span> Mitigation Strategy
+                        </h4>
+                        <p class="text-slate-600 mt-1">Focus on high-ROI channels like organic SEO and content marketing to build a long-term, low-cost lead funnel. Use a loss-leader (Optimal DX) to attract B2B partners.</p>
+                    </div>
+                 </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-800 text-white mt-16">
+        <div class="container mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-sm text-slate-400">
+            <p>&copy; 2025 Third Spring. Confidential Strategic Plan. For internal use only.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            const financialData = {
+                ambitious: {
+                    labels: ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5'],
+                    revenue: [3369600, 6061280, 8221824, 9945696, 11327112],
+                    costs: [1016400, 1829520, 2481216, 3001274, 3418898],
+                    margin: [2353200, 4231760, 5740608, 6944422, 7908214],
+                    newCustomers: [1200, 1200, 1200, 1200, 1200],
+                    renewingCustomers: [0, 960, 1728, 2342, 2834]
+                },
+                conservative: {
+                    labels: ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5'],
+                    revenue: [1684800, 3032640, 4110912, 4972848, 5663556],
+                    costs: [508200, 914760, 1240608, 1500637, 1709399],
+                    margin: [1176600, 2117880, 2870304, 3472211, 3954157],
+                    newCustomers: [600, 600, 600, 600, 600],
+                    renewingCustomers: [0, 480, 864, 1171, 1417]
+                }
+            };
+
+            let marginChart, customerChart;
+            let currentScenario = 'ambitious';
+
+            const chartOptions = {
+                maintainAspectRatio: false,
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    label += new Intl.NumberFormat('en-AU', { style: 'currency', currency: 'AUD', minimumFractionDigits: 0 }).format(context.parsed.y);
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + (value / 1000000) + 'M';
+                            }
+                        }
+                    }
+                }
+            };
+            
+            const customerChartOptions = {
+                ...chartOptions,
+                scales: {
+                     y: {
+                        beginAtZero: true,
+                        stacked: true,
+                        ticks: {
+                             callback: function(value) {
+                                return value.toLocaleString('en-AU');
+                            }
+                        }
+                    },
+                    x: {
+                        stacked: true
+                    }
+                },
+                plugins: {
+                    ...chartOptions.plugins,
+                    tooltip: {
+                         callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                     label += context.parsed.y.toLocaleString('en-AU');
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            };
+
+
+            function renderPrescriptionChart() {
+                const ctx = document.getElementById('prescriptionChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Injectables', 'Topical Gels/Creams', 'Oral'],
+                        datasets: [{
+                            label: 'Current PBS Supply (~50% of market)',
+                            data: [50, 45, 5],
+                            backgroundColor: ['#0d9488', '#14b8a6', '#5eead4'],
+                            borderColor: '#ffffff',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        maintainAspectRatio: false,
+                        responsive: true,
+                         plugins: {
+                            legend: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'PBS-Supplied TRT by Administration Method'
+                            },
+                             tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `${context.dataset.label}: ${context.raw}%`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                           x: {
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + '%';
+                                    }
+                                }
+                           }
+                        }
+                    }
+                });
+            }
+
+
+            function renderFinancialCharts(scenario) {
+                const data = financialData[scenario];
+                
+                if (marginChart) marginChart.destroy();
+                const marginCtx = document.getElementById('marginChart').getContext('2d');
+                marginChart = new Chart(marginCtx, {
+                    type: 'line',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                                label: 'Total Revenue',
+                                data: data.revenue,
+                                borderColor: '#0d9488',
+                                backgroundColor: 'rgba(13, 148, 136, 0.1)',
+                                tension: 0.3,
+                                fill: true,
+                            },
+                            {
+                                label: 'Total Margin',
+                                data: data.margin,
+                                borderColor: '#0ea5e9',
+                                backgroundColor: 'rgba(14, 165, 233, 0.1)',
+                                tension: 0.3,
+                                fill: true,
+                            },
+                             {
+                                label: 'Landed Costs',
+                                data: data.costs,
+                                borderColor: '#f43f5e',
+                                backgroundColor: 'rgba(244, 63, 94, 0.1)',
+                                tension: 0.3,
+                                fill: false,
+                                borderDash: [5, 5]
+                            }
+                        ]
+                    },
+                    options: chartOptions
+                });
+
+                if (customerChart) customerChart.destroy();
+                const customerCtx = document.getElementById('customerChart').getContext('2d');
+                customerChart = new Chart(customerCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.labels,
+                        datasets: [
+                            {
+                                label: 'New Customers',
+                                data: data.newCustomers,
+                                backgroundColor: '#14b8a6',
+                            },
+                             {
+                                label: 'Renewing Customers',
+                                data: data.renewingCustomers,
+                                backgroundColor: '#5eead4',
+                            }
+                        ]
+                    },
+                    options: customerChartOptions
+                });
+            }
+            
+            renderPrescriptionChart();
+            renderFinancialCharts(currentScenario);
+
+            document.getElementById('ambitiousBtn').addEventListener('click', () => {
+                currentScenario = 'ambitious';
+                document.getElementById('ambitiousBtn').classList.add('active');
+                document.getElementById('conservativeBtn').classList.remove('active');
+                renderFinancialCharts(currentScenario);
+            });
+
+            document.getElementById('conservativeBtn').addEventListener('click', () => {
+                currentScenario = 'conservative';
+                document.getElementById('conservativeBtn').classList.add('active');
+                document.getElementById('ambitiousBtn').classList.remove('active');
+                renderFinancialCharts(currentScenario);
+            });
+
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, { rootMargin: '-20% 0px -80% 0px' });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+             navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.querySelector(link.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+                });
+            });
+
+
+        });
+    </script>
+</body>
+</html>
+
